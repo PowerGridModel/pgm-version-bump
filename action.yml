@@ -12,6 +12,7 @@ runs:
       uses: pozetroninc/github-action-get-latest-release@master
       with:
         repository: ${{ github.repository }}
+        excludes: prerelease, draft
    
     - name: Run version bump script
       id: bump_version
