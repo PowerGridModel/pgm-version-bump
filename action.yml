@@ -30,13 +30,13 @@ runs:
 
           # Compare versions and calculate the new version
           if [[ "$current_major" -eq "$target_major" && "$current_minor" -eq "$target_minor" ]]; then
-        new_patch=$((current_patch + 1))
-        new_version="$current_major.$current_minor.$new_patch"
+            new_patch=$((current_patch + 1))
+            new_version="$current_major.$current_minor.$new_patch"
           elif [[ "$current_major" -lt "$target_major" || ("$current_major" -eq "$target_major" && "$current_minor" -lt "$target_minor") ]]; then
-        new_version="$target_major.$target_minor.0"
+            new_version="$target_major.$target_minor.0"
           else
-        echo "Error: Current major.minor is greater than the version in the VERSION file." >&2
-        exit 1
+            echo "Error: Current major.minor is greater than the version in the VERSION file." >&2
+            exit 1
           fi
 
           # handle GitHub Actions context
@@ -48,11 +48,11 @@ runs:
           short_hash=$(printf "%08d" $((16#${sha:0:6})))
 
           if [[ "$ref" == *"main"* ]]; then
-        # Main branch: keep the version as is
-        echo "$new_version"
+            # Main branch: keep the version as is
+            echo "$new_version"
           else
-        # Feature branch: append alpha versioning
-        echo "${new_version}a1${build_number}${short_hash}"
+            # Feature branch: append alpha versioning
+            echo "${new_version}a1${build_number}${short_hash}"
           fi
         }
 
