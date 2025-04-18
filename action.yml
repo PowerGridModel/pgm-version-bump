@@ -38,30 +38,25 @@ runs:
           echo "Error: Current major.minor is greater than the version in the VERSION file." >&2
           exit 1
         fi
-        
-        # Check if running on GitHub Actions and required environment variables are set
-        if [[ -n "$GITHUB_SHA" && -n "$GITHUB_REF" && -n "$GITHUB_RUN_NUMBER" ]]; then
-          sha="$GITHUB_SHA"
-          ref="$GITHUB_REF"
-          build_number="$GITHUB_RUN_NUMBER"
 
-          # Convert the short hash to a numeric value
-          short_hash=$(printf "%08d" $((16#${sha:0:6})))
+        # handle GitHub Actions context
+        sha="$GITHUB_SHA"
+        ref="$GITHUB_REF"
+        build_number="$GITHUB_RUN_NUMBER"
 
-          if [[ "$ref" == *"main"* ]]; then
-            # Main branch: keep the version as is
-            echo "$new_version"
-          else
-            # Feature branch: append alpha versioning
-            echo "${new_version}a1${build_number}${short_hash}"
-          fi
+        # Convert the short hash to a numeric value
+        short_hash=$(printf "%08d" $((16#${sha:0:6})))
+
+        if [[ "$ref" == *"main"* ]]; then
+          # Main branch: keep the version as is
+          echo "$new_version"
         else
-          echo "Error: Required GitHub Actions environment variables are not set." >&2
-          exit 1
+          # Feature branch: append alpha versioning
+          echo "${new_version}a1${build_number}${short_hash}"
         fi
       }
 
-       # Run the bump_version function with the latest tag
-       new_version=$(bump_version "${{ steps.fetch_tag.outputs.release }}")
-       # Save the new version to PYPI_VERSION file
-       echo "$new_version" > PYPI_VERSION
+      # Run the bump_version function with the latest tag
+      new_version=$(bump_version "${{ steps.fetch_tag.outputs.release }}")
+      # Save the new version to PYPI_VERSION file
+      echo "$new_version" > PYPI_VERSION
