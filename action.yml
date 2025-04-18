@@ -1,0 +1,46 @@
+# SPDX-FileCopyrightText: Contributors to the Power Grid Model project <powergridmodel@lfenergy.org>
+#
+# SPDX-License-Identifier: MPL-2.0
+
+name: Bump Version
+description: Retrieve the latest release tag, run the Bash script to bump version, and save the new version to PYPI_VERSION.
+runs:
+ using: "composite"
+ steps:
+   - name: Get Latest Release Tag
+     id: fetch_tag
+     uses: pozetroninc/github-action-get-latest-release@master
+     with:
+       repository: ${{ github.repository }}
+   
+   - name: Run version bump script
+     id: bump_version
+     shell: bash
+     run: |
+       bump_version() {
+         # Read the VERSION file
+         target_version=$(cat VERSION)
+
+         # Remove 'v' prefix from the latest release tag
+         current_version_clean=${1#v}
+
+         # Split the current and target versions into components
+         IFS='.' read -r current_major current_minor current_patch <<< "$current_version_clean"
+         IFS='.' read -r target_major target_minor <<< "$target_version"
+
+         # Compare versions and calculate the new version
+         if [[ "$current_major" -eq "$target_major" && "$current_minor" -eq "$target_minor" ]]; then
+           new_patch=$((current_patch + 1))
+           echo "$current_major.$current_minor.$new_patch"
+         elif [[ "$current_major" -lt "$target_major" || ("$current_major" -eq "$target_major" && "$current_minor" -lt "$target_minor") ]]; then
+           echo "$target_major.$target_minor.0"
+         else
+           echo "Error: Current major.minor is greater than the version in the VERSION file." >&2
+           exit 1
+         fi
+       }
+       
+       # Run the bump_version function with the latest tag
+       new_version=$(bump_version "${{ steps.fetch_tag.outputs.release }}")
+       # Save the new version to PYPI_VERSION file
+       echo "$new_version" > PYPI_VERSION
