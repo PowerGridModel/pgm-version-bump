@@ -16,30 +16,51 @@ runs:
    - name: Run version bump script
      id: bump_version
      shell: bash
-     run: |
-       bump_version() {
-         # Read the VERSION file
-         target_version=$(cat VERSION)
+    run: |
+      bump_version() {
+        # Read the VERSION file
+        target_version=$(cat VERSION)
 
-         # Remove 'v' prefix from the latest release tag
-         current_version_clean=${1#v}
+        # Remove 'v' prefix from the latest release tag
+        current_version_clean=${1#v}
 
-         # Split the current and target versions into components
-         IFS='.' read -r current_major current_minor current_patch <<< "$current_version_clean"
-         IFS='.' read -r target_major target_minor <<< "$target_version"
+        # Split the current and target versions into components
+        IFS='.' read -r current_major current_minor current_patch <<< "$current_version_clean"
+        IFS='.' read -r target_major target_minor <<< "$target_version"
 
-         # Compare versions and calculate the new version
-         if [[ "$current_major" -eq "$target_major" && "$current_minor" -eq "$target_minor" ]]; then
-           new_patch=$((current_patch + 1))
-           echo "$current_major.$current_minor.$new_patch"
-         elif [[ "$current_major" -lt "$target_major" || ("$current_major" -eq "$target_major" && "$current_minor" -lt "$target_minor") ]]; then
-           echo "$target_major.$target_minor.0"
-         else
-           echo "Error: Current major.minor is greater than the version in the VERSION file." >&2
-           exit 1
-         fi
-       }
-       
+        # Compare versions and calculate the new version
+        if [[ "$current_major" -eq "$target_major" && "$current_minor" -eq "$target_minor" ]]; then
+          new_patch=$((current_patch + 1))
+          new_version="$current_major.$current_minor.$new_patch"
+        elif [[ "$current_major" -lt "$target_major" || ("$current_major" -eq "$target_major" && "$current_minor" -lt "$target_minor") ]]; then
+          new_version="$target_major.$target_minor.0"
+        else
+          echo "Error: Current major.minor is greater than the version in the VERSION file." >&2
+          exit 1
+        fi
+        
+        # Check if running on GitHub Actions and required environment variables are set
+        if [[ -n "$GITHUB_SHA" && -n "$GITHUB_REF" && -n "$GITHUB_RUN_NUMBER" ]]; then
+          sha="$GITHUB_SHA"
+          ref="$GITHUB_REF"
+          build_number="$GITHUB_RUN_NUMBER"
+
+          # Convert the short hash to a numeric value
+          short_hash=$(printf "%08d" $((16#${sha:0:6})))
+
+          if [[ "$ref" == *"main"* ]]; then
+            # Main branch: keep the version as is
+            echo "$new_version"
+          else
+            # Feature branch: append alpha versioning
+            echo "${new_version}a1${build_number}${short_hash}"
+          fi
+        else
+          echo "Error: Required GitHub Actions environment variables are not set." >&2
+          exit 1
+        fi
+      }
+
        # Run the bump_version function with the latest tag
        new_version=$(bump_version "${{ steps.fetch_tag.outputs.release }}")
        # Save the new version to PYPI_VERSION file
