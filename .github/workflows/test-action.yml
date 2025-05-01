@@ -27,5 +27,5 @@ jobs:
       - name: Set PyPI Version
         uses: ./
 
-      - name: Sow latest version
+      - name: Show latest version
         run: cat PYPI_VERSION
