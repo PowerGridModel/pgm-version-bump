@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  reuse-compliance-check:
+  test-pgm-version-bump:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -30,5 +30,3 @@ jobs:
 
       - name: Set PyPI Version
         uses: PowerGridModel/pgm-version-bump@main
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
