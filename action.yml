@@ -7,7 +7,7 @@ description: Retrieve the latest release tag, run the Bash script to bump versio
 
 inputs:  # actions don't have secrets, so we use inputs instead
   token:
-    description: 'A Github PAT, e.g. `${{ secrets.GITHUB_TOKEN }}`'
+    description: 'A Github PAT, e.g. secrets.GITHUB_TOKEN'
     required: true
 
 runs:
