@@ -19,7 +19,7 @@ runs:
       with:
         repository: ${{ github.repository }}
         excludes: prerelease, draft
-        token: ${{ ::add-mask::inputs.token }}
+        token: ${{ inputs.token }}
    
     - name: Run version bump script
       id: bump_version
