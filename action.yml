@@ -8,6 +8,7 @@ runs:
   using: "composite"
   steps:
     - name: Show that the correct action from the correct SHA is used
+      shell: bash
       run: echo "This works"
 
     - name: Get Latest Release Tag
