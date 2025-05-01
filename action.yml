@@ -7,10 +7,6 @@ description: Retrieve the latest release tag, run the Bash script to bump versio
 runs:
   using: "composite"
   steps:
-    - name: Show that the correct action from the correct SHA is used
-      shell: bash
-      run: echo "This works"
-
     - name: Get Latest Release Tag
       id: fetch_tag
       uses: pozetroninc/github-action-get-latest-release@master
