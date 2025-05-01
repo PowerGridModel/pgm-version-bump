@@ -4,16 +4,22 @@
 
 name: Bump Version
 description: Retrieve the latest release tag, run the Bash script to bump version, and save the new version to PYPI_VERSION.
+
+inputs: # actions don't have secrets, so we use inputs instead
+  token:
+    description: "A Github PAT, e.g. secrets.GITHUB_TOKEN. When not provided, the action will use the default token (may hit rate limits)."
+
 runs:
   using: "composite"
   steps:
     - name: Get Latest Release Tag
       id: fetch_tag
-      uses: pozetroninc/github-action-get-latest-release@master
+      uses: pozetroninc/github-action-get-latest-release@v0.8.0
       with:
         repository: ${{ github.repository }}
         excludes: prerelease, draft
-   
+        token: ${{ inputs.token }}
+
     - name: Run version bump script
       id: bump_version
       shell: bash

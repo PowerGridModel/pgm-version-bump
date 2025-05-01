@@ -26,6 +26,8 @@ jobs:
 
       - name: Set PyPI Version
         uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Show latest version
         run: cat PYPI_VERSION
