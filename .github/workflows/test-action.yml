@@ -29,7 +29,7 @@ jobs:
           python-version: "3.12"
 
       - name: Set PyPI Version
-        uses: PowerGridModel/pgm-version-bump@
+        uses: ./
 
       - name: Low latest version
         run: cat PYPI_VERSION
