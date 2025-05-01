@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: Contributors to the Power Grid Model project <powergridmodel@lfenergy.org>
+#
+# SPDX-License-Identifier: MPL-2.0
+
+name: Test the Action
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-test-action
+  cancel-in-progress: true
+
+jobs:
+  reuse-compliance-check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set PyPI Version
+        uses: PowerGridModel/pgm-version-bump@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
