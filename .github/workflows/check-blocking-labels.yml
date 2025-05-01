@@ -43,4 +43,3 @@ jobs:
         run: |
           echo "This pull request needs (more) unit tests before it may be merged (needs-unit-tests)"
           exit 3
-          
