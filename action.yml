@@ -54,7 +54,7 @@ runs:
           # Convert the short hash to a numeric value
           short_hash=$(printf "%08d" $((16#${sha:0:6})))
 
-          if [[ "$ref" == *"main"* ]]; then
+          if [[ "$ref" == "refs/heads/main" ]]; then
             # Main branch: keep the version as is
             echo "$new_version"
           else
