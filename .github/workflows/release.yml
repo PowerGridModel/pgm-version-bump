@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: Contributors to the Power Grid Model project <powergridmodel@lfenergy.org>
+#
+# SPDX-License-Identifier: MPL-2.0
+
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  github-release:
+    name: Create and release assets to GitHub
+    runs-on: ubuntu-latest
+    environment: release
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Bump version
+        uses: ./
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine new version
+        id: determine-new-version
+        # We get output of this action inside a PYPI_VERSION file.
+        # It is unrelated to PyPI. We simply use it to determine the new version for the release
+        run: echo "version=$(cat PYPI_VERSION)" >> "$GITHUB_OUTPUT"
+
+      - name: generate GitHub App token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        id: generate-token
+        with:
+          client-id: ${{ secrets.RELEASE_BOT_APP_ID }}
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+
+      - name: Create release
+        uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b # v3.0.1
+        with:
+          tag_name: v${{ steps.determine-new-version.outputs.version }}
+          generate_release_notes: true
+          target_commitish: ${{ github.sha }}
+          token: ${{ steps.generate-token.outputs.token }}
