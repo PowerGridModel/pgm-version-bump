@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 name: Bump Version
-description: Retrieve the latest release tag, run the Bash script to bump version, and save the new version to PYPI_VERSION.
+description: Retrieve the latest release tag, run the Bash script to bump version, and save (possibly overwriting) the new version to the VERSION file.
 
 inputs: # actions don't have secrets, so we use inputs instead
   token:
@@ -65,5 +65,5 @@ runs:
 
         # Run the bump_version function with the latest tag
         new_version=$(bump_version "${{ steps.fetch_tag.outputs.release }}")
-        # Save the new version to PYPI_VERSION file
-        echo "$new_version" > PYPI_VERSION
+        # Save the new version to VERSION file, will overwrite the existing file
+        echo "$new_version" > VERSION
